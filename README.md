@@ -4,8 +4,8 @@ This is a demo project built with **Next.js** and **React**, showcasing what a m
 
 ## 🚀 Features
 
-- Built with https://nextjs.org/
-- UI components powered by https://www.radix-ui.com/
+- Built with [Next.js](https://nextjs.org/)
+- UI components powered by [Radix UI](https://www.radix-ui.com/)
 - Modular and reusable React components
 - Planned enhancements:
   - Vertical sidebar navigation
@@ -15,8 +15,28 @@ This is a demo project built with **Next.js** and **React**, showcasing what a m
 ## 📦 Getting Started
 
 To run the project locally:
+
 ```bash
 git clone https://github.com/USERNAME/customer-portal-demo.git
 cd customer-portal-demo
 npm install
 npm run dev
+```
+
+Then open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## 🛠️ Tech Stack
+
+- **React**
+- **Next.js**
+- **Radix UI**
+- **Tailwind CSS** (if used)
+- **TypeScript** (if enabled)
+
+## 📌 Notes
+
+This project is a work-in-progress and will evolve as new features are added and the design is modernised. It’s intended to demonstrate the potential of React for internal tooling and customer-facing portals.
+
+---
+
+Feel free to fork, clone, or contribute!
