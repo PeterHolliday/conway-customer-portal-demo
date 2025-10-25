@@ -1,3 +1,4 @@
+// app/(site)/page.tsx
 "use client";
 import Hero from "@/components/home/Hero";
 import AnnouncementBar from "@/components/home/AnnouncementBar";
@@ -12,7 +13,8 @@ export default function HomePage() {
   if (error) return <div className="mx-auto max-w-6xl px-4 py-8 text-red-600">Failed to load home data.</div>;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-0">
+      {/* Hero + Announcement must be flush */}
       {isLoading ? (
         <div className="mx-auto max-w-6xl px-4">
           <Skeleton className="h-[360px] w-full rounded-xl" />
@@ -20,11 +22,12 @@ export default function HomePage() {
       ) : (
         <Hero firstName={data?.user.firstName ?? "Customer"} />
       )}
-      <AnnouncementBar text={data?.announcement ?? "—"} className="-mt-px"/>
+      <AnnouncementBar text={data?.announcement ?? "—"} className="-mt-px" />
 
-      <WelcomeBlurb />
+      {/* Rest of the page */}
+      <WelcomeBlurb className="mt-6" />
 
-      <section className="mx-auto max-w-6xl px-4 pb-10">
+      <section className="mx-auto max-w-6xl px-4 pb-10 mt-6">
         <div className="border-t pt-6">
           <div className="text-sm font-semibold mb-4 text-[#007e48]">Account Details</div>
           {isLoading ? (
@@ -34,9 +37,7 @@ export default function HomePage() {
               <Skeleton className="h-[160px] rounded-lg" />
             </div>
           ) : (
-            <KpiCircles
-              // tweak `KpiCircles` to accept props if you want dynamic values
-            />
+            <KpiCircles />
           )}
         </div>
       </section>
