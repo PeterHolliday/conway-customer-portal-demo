@@ -30,8 +30,8 @@ Then open [http://localhost:3000](http://localhost:3000) in your browser.
 - **React**
 - **Next.js**
 - **Radix UI**
-- **Tailwind CSS** (if used)
-- **TypeScript** (if enabled)
+- **Tailwind CSS**
+- **TypeScript**
 
 ## 📌 Notes
 
