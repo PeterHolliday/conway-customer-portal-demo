@@ -6,6 +6,7 @@ This is a demo project built with **Next.js** and **React**, showcasing what a m
 
 - Built with [Next.js](https://nextjs.org/)
 - UI components powered by [Radix UI](https://www.radix-ui.com/)
+- and [Shadcn](https://ui.shadcn.com/)
 - Modular and reusable React components
 - Planned enhancements:
   - Vertical sidebar navigation
