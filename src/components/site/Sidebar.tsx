@@ -14,20 +14,17 @@ import {
   Mail,
   ChevronLeft,
   ChevronRight,
+  ReceiptText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "@/components/ui/accordion";
+
 import { SheetClose } from "@/components/ui/sheet";
 import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
+import CollapsibleGroup from "./CollapsibleGroup";
 
 /**
  * Reusable navigation block (used by the desktop sidebar and by Header's mobile Sheet).
@@ -54,47 +51,38 @@ export function NavBlock({
         collapsed={collapsed}
       />
 
-      <Accordion type="single" collapsible className="w-full">
-        <AccordionItem value="orders" className="border-none">
-          <Tooltip delayDuration={150}>
-            <TooltipTrigger asChild>
-              <AccordionTrigger
-                className={cn(
-                  "px-2 py-2 rounded hover:bg-gray-100 text-left",
-                  collapsed && "justify-center"
-                )}
-              >
-                <div className="flex items-center gap-2">
-                  <Package className="h-4 w-4" />
-                  {!collapsed && <span>Orders</span>}
-                </div>
-              </AccordionTrigger>
-            </TooltipTrigger>
-            {collapsed && <TooltipContent side="right">Orders</TooltipContent>}
-          </Tooltip>
-          <AccordionContent>
-            <div className={cn("mt-1 space-y-1", collapsed ? "ml-0" : "ml-6")}>
-              <NavLink
-                href="/orders"
-                icon={<ClipboardList className="h-4 w-4" />}
-                label="Orders"
-                active={pathname === "/orders"}
-                closeOnNavigate={closeOnNavigate}
-                collapsed={collapsed}
-              />
-              <NavLink
-                href="/order-requests"
-                icon={<ClipboardList className="h-4 w-4" />}
-                label="Order Requests"
-                active={pathname === "/order-requests"}
-                closeOnNavigate={closeOnNavigate}
-                collapsed={collapsed}
-              />
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
-
+      <CollapsibleGroup
+        icon={<Package className="h-4 w-4" />}
+        label="Orders"
+        collapsed={collapsed}
+      >
+        <div className={cn("mt-1 space-y-1", collapsed ? "ml-0" : "ml-6")}>
+          <NavLink
+            href="/orders"
+            icon={<ClipboardList className="h-4 w-4" />}
+            label="Orders"
+            active={pathname === "/orders"}
+            closeOnNavigate={closeOnNavigate}
+            collapsed={collapsed}
+          />
+          <NavLink
+            href="/order-requests"
+            icon={<ClipboardList className="h-4 w-4" />}
+            label="Order Requests"
+            active={pathname === "/order-requests"}
+            closeOnNavigate={closeOnNavigate}
+            collapsed={collapsed}
+          />
+        </div>
+      </CollapsibleGroup>
+      <NavLink
+        href="/quotations"
+        icon={<ReceiptText className="h-4 w-4" />}
+        label="Quotations"
+        active={pathname === "/quotations"}
+        closeOnNavigate={closeOnNavigate}
+        collapsed={collapsed}
+      />
       <NavLink
         href="/faq"
         icon={<HelpCircle className="h-4 w-4" />}
