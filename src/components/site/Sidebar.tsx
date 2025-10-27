@@ -68,8 +68,16 @@ export function NavBlock({
           <NavLink
             href="/order-requests"
             icon={<ClipboardList className="h-4 w-4" />}
-            label="Order Requests"
+            label="Customer Order Requests"
             active={pathname === "/order-requests"}
+            closeOnNavigate={closeOnNavigate}
+            collapsed={collapsed}
+          />
+          <NavLink
+            href="/internal-order-requests/new"
+            icon={<ClipboardList className="h-4 w-4" />}
+            label="Internal Order Requests"
+            active={pathname === "/internal-order-requests"}
             closeOnNavigate={closeOnNavigate}
             collapsed={collapsed}
           />
@@ -91,7 +99,6 @@ export function NavBlock({
         closeOnNavigate={closeOnNavigate}
         collapsed={collapsed}
       />
-
       <NavLink
         href="/contact"
         icon={<Mail className="h-4 w-4" />}
