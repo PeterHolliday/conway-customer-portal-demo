@@ -1,0 +1,44 @@
+// prisma/schema.prisma
+// Run: npx prisma generate && npx prisma migrate dev --name init_depots
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Depot {
+  id        String       @id @default(cuid())
+  name      String
+  code      String       @unique
+  timezone  String       @default("Europe/London")
+  isActive  Boolean      @default(true)
+  configs   DepotConfig[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+model DepotConfig {
+  id            String       @id @default(cuid())
+  depotId       String
+  depot         Depot        @relation(fields: [depotId], references: [id])
+  version       Int
+  effectiveFrom DateTime
+  status        ConfigStatus @default(DRAFT)
+  json          Json
+  createdById   String
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@unique([depotId, version])
+  @@index([depotId, status])
+}
+
+enum ConfigStatus {
+  DRAFT
+  PUBLISHED
+  RETIRED
+}
