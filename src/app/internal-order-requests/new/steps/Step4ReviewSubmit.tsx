@@ -4,6 +4,9 @@
 import { UseFormReturn } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { type InternalOrderRequest } from "@/schemas/internal-order-request";
+import { MATERIALS_GRID } from "@/lib/materialsGrid";
+
+const GRID = `${MATERIALS_GRID} [44px]`;
 
 export default function Step4ReviewSubmit({
   form,
@@ -21,6 +24,7 @@ export default function Step4ReviewSubmit({
             <CardTitle className="text-white">Order Details</CardTitle>
           </div>
         </CardHeader>
+        <CardContent className="grid gap-4 sm:grid-cols-1 pb-6">
         <Card>
           <CardContent className="pt-6">
             <div className="text-sm font-semibold mb-2">Order Details</div>
@@ -103,7 +107,7 @@ export default function Step4ReviewSubmit({
               {v.materials?.map((m, i) => (
                 <div
                   key={i}
-                  className="grid grid-cols-[100px_100px_110px_110px_90px_90px_90px_90px_100px_1fr] gap-2 text-sm"
+                  className={`${GRID} ...`}
                 >
                   <div>{m.tonnage ?? "—"}</div>
                   <div>{m.mixType ?? "—"}</div>
@@ -114,12 +118,14 @@ export default function Step4ReviewSubmit({
                   <div>{m.psv || "—"}</div>
                   <div>{m.clause || "—"}</div>
                   <div>{m.areaCode ?? "—"}</div>
-                  <div>{m.otherRef || "—"}</div>
+                  <div>{m.timeOnSite || "—"}</div>
+                  <div>{m.deliveryRate || "—"}</div>
                 </div>
               ))}
             </div>
           </CardContent>
         </Card>
+        </CardContent>
       </Card>
     </div>
   );
