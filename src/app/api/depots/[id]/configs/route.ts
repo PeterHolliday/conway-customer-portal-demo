@@ -32,7 +32,6 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id: depotId } = await params;
-
   const body = bodyZ.parse(await request.json());
   const { effectiveFrom, createdById, cloneFromVersion } = body;
 
