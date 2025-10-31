@@ -11,7 +11,8 @@ export function ProductsEditor({
   PRODUCTS,
 }: { form: UseFormReturn<FormValues>; colIdx: number; PRODUCTS: string[] }) {
   const { fields, append, remove } = useFieldArray({ control: form.control, name: `collections.${colIdx}.products` as const });
-  const prodErr = (form.formState.errors as any).collections?.[colIdx]?.products;
+  const arrayPath = `collections.${colIdx}.products` as `collections.${number}.products`;
+  const prodErr = form.getFieldState(arrayPath).error;
 
   return (
     <div className="space-y-3">
@@ -23,7 +24,7 @@ export function ProductsEditor({
           <div key={f.id} className="grid gap-3 sm:grid-cols-[2fr_1fr_auto] items-end">
             <div>
               <Label>Product</Label>
-              <Select onValueChange={(v) => form.setValue(`${base}.product`, v, { shouldValidate: true })} value={form.watch(`${base}.product`)}>
+              <Select onValueChange={(v: string) => form.setValue(`${base}.product`, v, { shouldValidate: true })} value={form.watch(`${base}.product`)}>
                 <SelectTrigger><SelectValue placeholder="Select product" /></SelectTrigger>
                 <SelectContent>{PRODUCTS.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
               </Select>

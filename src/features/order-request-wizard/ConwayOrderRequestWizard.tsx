@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, FieldPath } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -10,11 +10,11 @@ import { StepDetails } from "./steps/StepDetails";
 import { StepCollections } from "./steps/StepCollections";
 import { StepReview } from "./steps/StepReview";
 
-const steps = [
+const steps: { key: "details" | "collections" | "review"; title: string; trigger: FieldPath<FormValues>[] }[] = [
   { key: "details", title: "Order details", trigger: ["collectionDate", "location", "siteContact", "poReference"] },
   { key: "collections", title: "Collections", trigger: ["collections"] },
   { key: "review", title: "Review & submit", trigger: ["collectionDate", "location", "siteContact", "collections"] },
-] as const;
+];
 
 const PRODUCTS = ["AC 10 Open Surf 100/150 HS", "AC 20 Dense Bin 100/150", "AC 32 Base 160/220", "HRA 55/10 F Surf 100/150"];
 const LOCATIONS = ["HEATHROW", "ALDERSHOT", "CHELSFIELD"];
@@ -22,31 +22,30 @@ const CONTACTS = ["Sandra Barney", "John Smith", "Alex Patel"];
 
 export default function ConwayOrderWizard() {
   const form = useForm<FormValues>({
-  resolver: zodResolver(FullSchema), 
-  defaultValues: {
-    collectionDate: "",
-    location: "",
-    siteContact: "",
-    poReference: "",
-    collections: [
-      { products: [{ product: PRODUCTS[0], quantity: 2 }], time: "06:00" }, // quantity is a number
-    ],
-  },
-  mode: "onChange",
-});
-
+    resolver: zodResolver(FullSchema),
+    defaultValues: {
+      collectionDate: "",
+      location: "",
+      siteContact: "",
+      poReference: "",
+      collections: [
+        { products: [{ product: PRODUCTS[0], quantity: 2 }], time: "06:00" },
+      ],
+    },
+    mode: "onChange",
+  });
 
   const [step, setStep] = useState(0);
   const progress = Math.round((step / (steps.length - 1)) * 100);
 
   const next = async () => {
-    const ok = await form.trigger(steps[step].trigger as any, { shouldFocus: true });
+    const ok = await form.trigger(steps[step].trigger, { shouldFocus: true });
     if (ok) setStep((s) => Math.min(s + 1, steps.length - 1));
   };
   const prev = () => setStep((s) => Math.max(s - 1, 0));
 
   const submit = async () => {
-    const ok = await form.trigger(steps[2].trigger as any, { shouldFocus: true });
+    const ok = await form.trigger(steps[2].trigger, { shouldFocus: true });
     if (ok) {
       const values = form.getValues();
       console.log("Submitted order payload:", values);
