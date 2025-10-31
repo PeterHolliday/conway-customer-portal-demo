@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -58,7 +58,7 @@ const steps: Step[] = [
 ];
 
 export default function OrderRequestStepper() {
-  const router = useRouter();
+  // const router = useRouter();
 
   const [displayDeliveryDay, setDisplayDeliveryDay] = useState<string>("");
 
@@ -127,33 +127,33 @@ export default function OrderRequestStepper() {
     setStep((c) => Math.max(c - 1, 0));
   }
 
-//   async function onSubmitAll(data: InternalOrderRequest) {
-//     const reqDate = new Date().toISOString();
-//     let deliveryDay: InternalOrderRequest["deliveryDay"] | undefined;
-//     if (data.deliveryDate) {
-//       const d = new Date(data.deliveryDate + "T00:00:00");
-//       const names = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
-//       deliveryDay = names[d.getUTCDay()] as InternalOrderRequest["deliveryDay"];
-//     }
-//     const payload = { ...data, date: reqDate, deliveryDay };
-//     console.log("Submitting InternalOrderRequest:", payload);
-//     alert("Order captured (UI only). Next: connect workflow & persistence.");
-//     router.push("/internal-order-requests");
-//   }
-const onSubmitAll: SubmitHandler<InternalOrderRequest> = async (data) => {
-  const date = new Date().toISOString();
+  //   async function onSubmitAll(data: InternalOrderRequest) {
+  //     const reqDate = new Date().toISOString();
+  //     let deliveryDay: InternalOrderRequest["deliveryDay"] | undefined;
+  //     if (data.deliveryDate) {
+  //       const d = new Date(data.deliveryDate + "T00:00:00");
+  //       const names = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
+  //       deliveryDay = names[d.getUTCDay()] as InternalOrderRequest["deliveryDay"];
+  //     }
+  //     const payload = { ...data, date: reqDate, deliveryDay };
+  //     console.log("Submitting InternalOrderRequest:", payload);
+  //     alert("Order captured (UI only). Next: connect workflow & persistence.");
+  //     router.push("/internal-order-requests");
+  //   }
+  const onSubmitAll: SubmitHandler<InternalOrderRequest> = async (data) => {
+    const date = new Date().toISOString();
 
-  const names = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"] as const;
-  const deliveryDay =
-    data.deliveryDate
-      ? (names[new Date(data.deliveryDate + "T00:00:00").getUTCDay()] as InternalOrderRequest["deliveryDay"])
-      : undefined;
+    const names = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
+    const deliveryDay =
+      data.deliveryDate
+        ? (names[new Date(data.deliveryDate + "T00:00:00").getUTCDay()] as InternalOrderRequest["deliveryDay"])
+        : undefined;
 
-  const payload = { ...data, date, deliveryDay };
+    const payload = { ...data, date, deliveryDay };
 
-  console.log("Submitting InternalOrderRequest:", payload);
-  // await fetch("/api/internal-order-requests", { method:"POST", body: JSON.stringify(payload) })
-};
+    console.log("Submitting InternalOrderRequest:", payload);
+    // await fetch("/api/internal-order-requests", { method:"POST", body: JSON.stringify(payload) })
+  };
   return (
 
     <div className="mx-auto max-w-5xl space-y-6 p-4">

@@ -8,7 +8,7 @@ import { Summary } from "@/components/summary/Summary";
 export function StepReview({ form, onBack, onSubmit }: {
   form: UseFormReturn<FormValues>; onBack: () => void; onSubmit: () => void;
 }) {
-  const v = form.getValues();
+  // const v = form.getValues();
 
   return (
     <Card className="overflow-hidden rounded-xl">
@@ -17,17 +17,17 @@ export function StepReview({ form, onBack, onSubmit }: {
           <CardTitle className="text-white">Review & submit</CardTitle>
         </div>
       </CardHeader>
-        <Summary values={form.getValues()} />
+      <Summary values={form.getValues()} />
       <CardFooter className="flex items-center justify-between">
         <Button type="button" className="mb-3" variant="outline" onClick={onBack}>Back</Button>
-        <Button 
-          type="button" 
-          className="mb-3" 
-          disabled={!form.formState.isValid} 
+        <Button
+          type="button"
+          className="mb-3"
+          disabled={!form.formState.isValid}
           onClick={onSubmit}
           title={!form.formState.isValid ? "Fill in all required fields before proceeding" : ""}
-          >
-            Submit
+        >
+          Submit
         </Button>
       </CardFooter>
     </Card>
