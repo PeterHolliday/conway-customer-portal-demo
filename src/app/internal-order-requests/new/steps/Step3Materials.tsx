@@ -2,15 +2,10 @@
 "use client";
 
 import { UseFormReturn, useFieldArray } from "react-hook-form";
-import { Input } from "@/components/ui/input";
+import type { InternalOrderRequest } from "@/schemas/internal-order-request";
+
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectTrigger,
@@ -18,368 +13,179 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+
 import { Plus, Trash2 } from "lucide-react";
-import { type InternalOrderRequest } from "@/schemas/internal-order-request";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FocusScope } from "@radix-ui/react-focus-scope";
-import { MATERIALS_GRID } from "@/lib/materialsGrid";
 
-const MIX_TYPES = ["AC", "SMA", "HRA"] as const;
-const STONE_SIZES = ["4", "6", "10", "14", "20", "32"] as const;
-const CHARACTERISTICS = ["Open", "Dense", "Poro"] as const;
-const LAYERS = ["Surf", "Bin"] as const;
-const HARDNESS = ["LS", "HS", "NS"] as const;
-const GRID = `${MATERIALS_GRID} [44px]`;
+// 🔹 Shared config: column definitions + grid template
+import { MATERIAL_COLUMNS } from "@/lib/materialColumns";
+import { MATERIALS_GRID_INPUT as GRID_BASE } from "@/lib/materialsGrid";
 
-export default function Step3Materials({
-  form,
-}: {
+// 🔹 FormValueArray = dynamic, type-safe array path helper (materials.i.key)
+import FormValueArray from "@/components/form-value-array";
+
+type Props = {
   form: UseFormReturn<InternalOrderRequest>;
-}) {
+};
+
+export default function Step3Materials({ form }: Props) {
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "materials",
   });
 
+  // Build the CSS grid template from the column widths + a delete column
+  const gridTemplate = `${GRID_BASE}`; // GRID_BASE already includes delete column width
+
+  // Build defaults for a new row from the column config
+  function newRowDefaults(): Partial<InternalOrderRequest["materials"][number]> {
+    const obj = Object.fromEntries(
+      MATERIAL_COLUMNS.map((c) => [c.key, c.defaultValue ?? undefined])
+    );
+    return obj as Partial<InternalOrderRequest["materials"][number]>;
+  }
+
   return (
-    <Card className="overflow-hidden rounded-xl">
-      <CardHeader className="p-0">
-        <div className="bg-[#007e48] text-white px-4 py-3">
-          <CardTitle className="text-white">Order Details</CardTitle>
+    <div className="overflow-x-auto">
+      <div className="min-w-[1100px] space-y-3">
+        {/* Header */}
+        <div
+          className="grid gap-3 text-xs font-medium text-muted-foreground select-none"
+          style={{
+            // MATERIALS_GRID_INPUT is a class string; we only need its column spec.
+            // If you prefer pure classes, replace this inline style by keeping the class on the div.
+            // Here we rely on the class string directly:
+            // className={`${GRID_BASE} text-xs ...`}
+          }}
+        >
+          <div className={`${gridTemplate} text-xs font-medium text-muted-foreground select-none`}>
+            {MATERIAL_COLUMNS.map((col) => (
+              <div key={String(col.key)}>{col.header}</div>
+            ))}
+            <div /> {/* delete col */}
+          </div>
         </div>
-      </CardHeader>
-      <CardContent className="grid gap-4 sm:grid-cols-1 pb-6">
-        <FocusScope loop trapped>
-          <Form {...form}>
-            {/* horizontal scroll on narrow screens; keep inputs spaced */}
-            <div className="overflow-x-auto">
-              <div className="min-w-[1100px] space-y-3">
-                {/* header */}
-                <div
-                  className={`${GRID} text-xs font-medium text-muted-foreground select-none`}
-                >
-                  <div>Tonnage</div>
-                  <div>AC/SMA/HRA</div>
-                  <div>Stone size</div>
-                  <div>Density</div>
-                  <div>Surf/Bin</div>
-                  <div>Pen</div>
-                  <div>PSV</div>
-                  <div>Clause</div>
-                  <div>LS/HS/NS</div>
-                  <div>Time On Site</div>
-                  <div>Delivery Rate/Daywork</div>
-                  <div />
-                </div>
 
-                {/* rows */}
-                {fields.map((row, idx) => (
-                  <div key={row.id} className={GRID}>
-                    {/* Tonnage */}
-                    <FormField
-                      control={form.control}
-                      name={`materials.${idx}.tonnage`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Input
-                              className="w-full"
-                              type="number"
-                              min={0}
-                              step="0.01"
-                              placeholder="t"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Mix type */}
-                    <FormField
-                      control={form.control}
-                      name={`materials.${idx}.mixType`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <Select
-                            value={field.value}
-                            onValueChange={(v) =>
-                              field.onChange(v as typeof field.value)
-                            }
-                          >
-                            <FormControl>
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder="" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {MIX_TYPES.map((m) => (
-                                <SelectItem key={m} value={m}>
-                                  {m}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Stone size */}
-                    <FormField
-                      control={form.control}
-                      name={`materials.${idx}.stoneSize`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <Select
-                            value={field.value}
-                            onValueChange={(v) =>
-                              field.onChange(v as typeof field.value)
-                            }
-                          >
-                            <FormControl>
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder="" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {STONE_SIZES.map((s) => (
-                                <SelectItem key={s} value={s}>
-                                  {s}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Open/Dense/Poro */}
-                    <FormField
-                      control={form.control}
-                      name={`materials.${idx}.characteristic`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <Select
-                            value={field.value}
-                            onValueChange={(v) =>
-                              field.onChange(v as typeof field.value)
-                            }
-                          >
-                            <FormControl>
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder="" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {CHARACTERISTICS.map((c) => (
-                                <SelectItem key={c} value={c}>
-                                  {c}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Surf/Bin */}
-                    <FormField
-                      control={form.control}
-                      name={`materials.${idx}.layer`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <Select
-                            value={field.value}
-                            onValueChange={(v) =>
-                              field.onChange(v as typeof field.value)
-                            }
-                          >
-                            <FormControl>
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder="" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {LAYERS.map((l) => (
-                                <SelectItem key={l} value={l}>
-                                  {l}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Pen */}
-                    <FormField
-                      control={form.control}
-                      name={`materials.${idx}.pen`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Input
-                              className="w-full"
-                              placeholder=""
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* PSV */}
-                    <FormField
-                      control={form.control}
-                      name={`materials.${idx}.psv`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Input
-                              className="w-full"
-                              placeholder=""
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Clause */}
-                    <FormField
-                      control={form.control}
-                      name={`materials.${idx}.clause`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Input
-                              className="w-full"
-                              placeholder=""
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Area code */}
-                    <FormField
-                      control={form.control}
-                      name={`materials.${idx}.areaCode`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <Select
-                            value={field.value}
-                            onValueChange={(v) =>
-                              field.onChange(v as typeof field.value)
-                            }
-                          >
-                            <FormControl>
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder="" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {HARDNESS.map((a) => (
-                                <SelectItem key={a} value={a}>
-                                  {a}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Time on Site */}
-                    <FormField
-                      control={form.control}
-                      name={`materials.${idx}.timeOnSite`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Input
-                              className="w-full"
-                              placeholder=""
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Delivery Rate/Daywork */}
-                    <FormField
-                      control={form.control}
-                      name={`materials.${idx}.deliveryRate`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Input
-                              className="w-full"
-                              placeholder=""
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Delete button */}
-                    <div className="flex items-center justify-end">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => remove(idx)}
-                        aria-label="Remove row"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-
-                <div>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={() =>
-                      append({
-                        tonnage: 0,
-                        mixType: "",
-                        stoneSize: "",
-                        characteristic: "",
-                        layer: "",
-                        pen: "",
-                        psv: "",
-                        clause: "",
-                        areaCode: "",
-                        timeOnSite: "",
-                        deliveryRate: "",
-                      })
-                    }
+        {/* Rows */}
+        {fields.map((row, idx) => (
+          <div key={row.id} className={gridTemplate}>
+            {MATERIAL_COLUMNS.map((col) => {
+              // Number editor: store number|undefined, UI is string
+              if (col.editor === "number") {
+                return (
+                  <FormValueArray<
+                    InternalOrderRequest,
+                    "materials",
+                    typeof col.key,
+                    string
                   >
-                    <Plus className="h-4 w-4 mr-1" />
-                    Add material row
-                  </Button>
-                </div>
-              </div>
+                    key={String(col.key)}
+                    form={form}
+                    array="materials"
+                    index={idx}
+                    field={col.key}
+                    format={(n) => (n === undefined ? "" : String(n))}
+                    parse={(s) => (s === "" ? undefined : Number(s))}
+                  >
+                    {(value, set) => (
+                      <Input
+                        type="number"
+                        inputMode="decimal"
+                        value={value}
+                        onChange={(e) => set(e.target.value)}
+                        className="w-full"
+                      />
+                    )}
+                  </FormValueArray>
+                );
+              }
+
+              // Select editor: unions/strings
+              if (col.editor === "select") {
+                return (
+                  <FormValueArray<
+                    InternalOrderRequest,
+                    "materials",
+                    typeof col.key
+                  >
+                    key={String(col.key)}
+                    form={form}
+                    array="materials"
+                    index={idx}
+                    field={col.key}
+                  >
+                    {(value, set) => (
+                      <Select
+                        value={value ?? undefined}
+                        onValueChange={(v) => set(v)}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder={col.header} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {(col.options ?? []).map((opt) => (
+                            <SelectItem key={opt} value={opt}>
+                              {opt}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  </FormValueArray>
+                );
+              }
+
+              // Text editor
+              return (
+                <FormValueArray<
+                  InternalOrderRequest,
+                  "materials",
+                  typeof col.key,
+                  string
+                >
+                  key={String(col.key)}
+                  form={form}
+                  array="materials"
+                  index={idx}
+                  field={col.key}
+                  format={(s) => s ?? ""}
+                  parse={(s) => s}
+                >
+                  {(value, set) => (
+                    <Input
+                      value={value}
+                      onChange={(e) => set(e.target.value)}
+                      className="w-full"
+                    />
+                  )}
+                </FormValueArray>
+              );
+            })}
+
+            {/* Delete button cell */}
+            <div className="flex items-center justify-end">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => remove(idx)}
+                aria-label="Remove row"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
             </div>
-          </Form>
-        </FocusScope>
-      </CardContent>
-    </Card>
+          </div>
+        ))}
+
+        {/* Add row */}
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={() => append(newRowDefaults() as InternalOrderRequest["materials"][number])}
+        >
+          <Plus className="h-4 w-4 mr-1" />
+          Add material row
+        </Button>
+      </div>
+    </div>
   );
 }

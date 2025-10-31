@@ -12,7 +12,7 @@ export const internalMaterialRowZ = z.object({
   tonnage: z.coerce.number().min(0, "Must be >= 0").optional().default(0),
   mixType: z.enum(["", "AC", "SMA", "HRA"]).optional().default(""),
   stoneSize: z.enum(["", "4", "6", "10", "14", "20", "32"]).optional().default(""),
-  characteristic: z.enum(["", "Open", "Dense", "Poro"]).optional().default(""),
+  characteristic: z.enum(["", "Open", "Dense", "Porous"]).optional().default(""),
   layer: z.enum(["", "Surf", "Bin"]).optional().default(""),
   pen: z.string().optional().default(""),
   psv: z.string().optional().default(""),

@@ -4,9 +4,9 @@
 import { UseFormReturn } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { type InternalOrderRequest } from "@/schemas/internal-order-request";
-import { MATERIALS_GRID } from "@/lib/materialsGrid";
+import { MATERIALS_GRID_BASE } from "@/lib/materialsGrid";
 
-const GRID = `${MATERIALS_GRID} [44px]`;
+const GRID = `${MATERIALS_GRID_BASE} [44px]`;
 
 export default function Step4ReviewSubmit({
   form,
@@ -101,7 +101,7 @@ export default function Step4ReviewSubmit({
         </Card>
 
         <Card>
-          <CardContent className="pt-6">
+          <CardContent className="pt-6 space-y-3">
             <div className="text-sm font-semibold mb-2">Materials</div>
             <div className="space-y-2">
               {v.materials?.map((m, i) => (
