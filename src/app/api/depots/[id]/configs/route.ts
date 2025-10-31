@@ -6,7 +6,6 @@ import { configZ, validateUniqueKeys } from "@/schemas/depot-config";
 
 const prisma = new PrismaClient();
 
-// Shape for the POST request body (we validate `json` separately with configZ)
 const bodyZ = z.object({
   json: z.unknown().optional(),
   effectiveFrom: z.union([z.string(), z.date()]).optional(),
@@ -15,8 +14,11 @@ const bodyZ = z.object({
 });
 
 // GET: list versions for a depot (latest first)
-export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
-  const depotId = params.id;
+export async function GET(
+  _: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id: depotId } = await params;
   const configs = await prisma.depotConfig.findMany({
     where: { depotId },
     orderBy: [{ version: "desc" }],
@@ -25,8 +27,11 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
 }
 
 // POST: create or upsert a DRAFT config (optionally clone)
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
-  const depotId = params.id;
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id: depotId } = await params;
 
   const body = bodyZ.parse(await request.json());
   const { effectiveFrom, createdById, cloneFromVersion } = body;
@@ -48,7 +53,6 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     return NextResponse.json({ error: "`json` is required when not cloning" }, { status: 400 });
   }
 
-  // Validate config shape
   const parsed = configZ.safeParse(candidateJson);
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
@@ -59,7 +63,6 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     return NextResponse.json({ error: { issues: extraIssues } }, { status: 400 });
   }
 
-  // Next version number
   const latest = await prisma.depotConfig.findFirst({
     where: { depotId },
     orderBy: [{ version: "desc" }],
