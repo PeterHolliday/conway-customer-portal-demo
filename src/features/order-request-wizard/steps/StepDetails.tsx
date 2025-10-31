@@ -9,12 +9,15 @@ import type { FormValues } from "@/schemas/order";
 import { tomorrowISO } from "@/lib/date";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
-
 export function StepDetails({
   form, LOCATIONS, CONTACTS, onNext,
 }: { form: UseFormReturn<FormValues>; LOCATIONS: string[]; CONTACTS: string[]; onNext: () => void}) {
-  const errors = form.formState.errors as Record<string, any>;
   const tomorrow = tomorrowISO();
+
+  const collectionDateErr = form.getFieldState("collectionDate").error?.message;
+  const locationErr = form.getFieldState("location").error?.message;
+  const siteContactErr = form.getFieldState("siteContact").error?.message;
+  const poReferenceErr = form.getFieldState("poReference").error?.message;
 
   return (
     <Card className="overflow-hidden rounded-xl">
@@ -28,25 +31,25 @@ export function StepDetails({
         <div>
           <Label htmlFor="collectionDate">Collection date</Label>
           <Input id="collectionDate" type="date" min={tomorrow} {...form.register("collectionDate")} />
-          {errors.collectionDate && <p className="text-sm text-destructive mt-1">{errors.collectionDate.message}</p>}
+          {collectionDateErr && <p className="text-sm text-destructive mt-1">{collectionDateErr}</p>}
         </div>
 
         <div>
           <Label>Select location</Label>
-          <Select onValueChange={(v) => form.setValue("location", v, { shouldValidate: true })} value={form.watch("location")}>
+          <Select onValueChange={(v: string) => form.setValue("location", v, { shouldValidate: true })} value={form.watch("location")}>
             <SelectTrigger><SelectValue placeholder="Choose a location" /></SelectTrigger>
             <SelectContent>{LOCATIONS.map((l) => <SelectItem key={l} value={l}>{l}</SelectItem>)}</SelectContent>
           </Select>
-          {errors.location && <p className="text-sm text-destructive mt-1">{errors.location.message}</p>}
+          {locationErr && <p className="text-sm text-destructive mt-1">{locationErr}</p>}
         </div>
 
         <div>
           <Label>Site contact</Label>
-          <Select onValueChange={(v) => form.setValue("siteContact", v, { shouldValidate: true })} value={form.watch("siteContact")}>
+          <Select onValueChange={(v: string) => form.setValue("siteContact", v, { shouldValidate: true })} value={form.watch("siteContact")}>
             <SelectTrigger><SelectValue placeholder="Choose a contact" /></SelectTrigger>
             <SelectContent>{CONTACTS.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
           </Select>
-          {errors.siteContact && <p className="text-sm text-destructive mt-1">{errors.siteContact.message}</p>}
+          {siteContactErr && <p className="text-sm text-destructive mt-1">{siteContactErr}</p>}
         </div>
 
         <div>
@@ -57,17 +60,16 @@ export function StepDetails({
             value={form.watch("poReference") ?? ""}
             onChange={(e) => form.setValue("poReference", e.target.value.toUpperCase(), { shouldValidate: true })}
           />
-          {errors.poReference && <p className="text-sm text-destructive mt-1">{errors.poReference.message}</p>}
+          {poReferenceErr && <p className="text-sm text-destructive mt-1">{poReferenceErr}</p>}
         </div>
       </CardContent>
 
       <CardFooter className="flex justify-end gap-2">
         <Tooltip
-          // keep tooltip mounted; hide it when valid
           open={form.formState.isValid ? false : undefined}
         >
           <TooltipTrigger asChild>
-            <span className="inline-flex"> {/* makes the trigger box fit the button */}
+            <span className="inline-flex">
               <Button
                 type="button"
                 className="mb-3"
